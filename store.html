@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APK Store - Premium Apps & Games</title>
+    
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    
+</head>
+<body>
+
+<div id="apk-app" x-data="apkGallery()" class="container">
+    
+    <div x-show="view === 'gallery'" x-transition.opacity>
+        
+        <section class="shop-profile">
+            <div class="shop-header">
+                <h1>O'Cre Apk Store</h1>
+                <p class="shop-tagline">Penyedia & Developer Aplikasi Android</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="feature-title">100% Aman & Bersih</h3>
+                        <p class="feature-desc">Berkas APK sudah lolos uji pemindaian virus.</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="feature-title">Ukuran File Kecil</h3>
+                        <p class="feature-desc">File APK dikompres untuk menghemat ruang penyimpanan.</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.213 6H16"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="feature-title">100% Tanpa Iklan</h3>
+                        <p class="feature-desc">Tidak berisi iklan yang mengganggu.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <header class="controls-bar">
+            <div class="search-wrapper">
+                <input type="text" x-model="search" placeholder="Cari aplikasi atau game..." class="search-input">
+                <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            
+            <div class="selectors-group">
+                <select x-model="category" class="select-custom">
+                    <option value="all">Semua Kategori</option>
+                    <template x-for="cat in uniqueCategories" :key="cat">
+                        <option :value="cat" x-text="cat"></option>
+                    </template>
+                </select>
+
+                <select x-model="sortBy" class="select-custom">
+                    <option value="latest">Terbaru</option>
+                    <option value="cheap">Harga Terendah</option>
+                    <option value="expensive">Harga Tertinggi</option>
+                </select>
+            </div>
+        </header>
+
+        <div x-show="apps.length === 0 && !errorLoading" class="state-container">
+            <div class="animate-spin"></div>
+            <p class="state-text">Menghubungkan ke database cloud...</p>
+        </div>
+
+        <div x-show="errorLoading" class="state-container" x-cloak>
+            <p class="state-text state-error">Gagal Memuat Database.</p>
+            <p class="state-text" style="font-size: 0.8rem;">Periksa kembali konfigurasi hak akses atau tautan URL Web App Apps Script Anda.</p>
+        </div>
+
+        <main x-show="apps.length > 0" class="gallery-grid" x-cloak>
+            <template x-for="app in filteredApps" :key="app.id">
+                <div class="app-card" @click="showDetails(app)">
+                    <div class="app-card-thumb">
+                        <img :src="app.icon" :alt="app.name" loading="lazy">
+                        <div x-show="app.isPremium" class="badge-premium">Premium</div>
+                    </div>
+                    
+                    <div style="flex-grow: 1;">
+                        <div class="app-card-meta">
+                            <span class="cat-tag" x-text="app.category"></span>
+                        </div>
+                        <h3 class="app-card-title" x-text="app.name"></h3>
+                        <p class="app-card-desc" x-text="app.shortDesc"></p>
+                    </div>
+                    
+                    <div class="app-card-footer">
+                        <span class="price-text" x-text="app.price === 0 ? 'GRATIS' : formatCurrency(app.price)"></span>
+                        <div class="arrow-action">
+                            <svg style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </main>
+
+        <div x-show="filteredApps.length === 0 && apps.length > 0" class="state-container" x-cloak>
+            <h3 class="state-text" style="font-weight: 700; color: var(--text-main); font-size: 1.25rem;">Aplikasi Tidak Ditemukan</h3>
+            <p class="state-text" style="font-size: 0.85rem; margin-top: 0.25rem;">Coba ganti kata kunci pencarian atau bersihkan filter kategori Anda.</p>
+        </div>
+    </div>
+
+
+    <div x-show="view === 'detail'" x-transition.opacity x-cloak>
+        
+        <button @click="backToGallery()" class="back-btn">
+            <svg style="width: 1.1rem; height: 1.1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <span>Kembali ke Katalog</span>
+        </button>
+
+        <div class="detail-layout">
+            <div class="detail-left">
+                <div class="slider-viewport">
+                    <template x-for="(img, index) in selectedApp.screenshots" :key="index">
+                        <div x-show="currentSlide === index" x-transition.scale.90 style="height: 100%; width: 100%; display: flex; justify-content: center; align-items: center;">
+                            <img :src="img" class="slide-img" alt="Pratinjau Gambar">
+                        </div>
+                    </template>
+                    
+                    <div x-show="!selectedApp.screenshots || selectedApp.screenshots.length === 0" style="color: #cbd5e1; text-align: center;">
+                         <p style="font-size: 0.8rem; font-weight: 600;">Pratinjau gambar belum tersedia</p>
+                    </div>
+                </div>
+
+                <div class="slider-dots" x-show="selectedApp.screenshots && selectedApp.screenshots.length > 1">
+                    <template x-for="(img, index) in selectedApp.screenshots" :key="index">
+                        <button @click="currentSlide = index" :class="currentSlide === index ? 'dot active' : 'dot inactive'"></button>
+                    </template>
+                </div>
+
+                <button @click="prevSlide()" x-show="selectedApp.screenshots && selectedApp.screenshots.length > 1" class="nav-arrow prev">
+                    <svg style="width: 1.2rem; height: 1.2rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <button @click="nextSlide()" x-show="selectedApp.screenshots && selectedApp.screenshots.length > 1" class="nav-arrow next">
+                    <svg style="width: 1.2rem; height: 1.2rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            </div>
+
+            <div class="detail-right">
+                <div class="detail-app-header">
+                    <img :src="selectedApp.icon" class="detail-icon" alt="App Icon">
+                    <div>
+                        <h2 class="detail-app-title" x-text="selectedApp.name"></h2>
+                        <div class="detail-sub-group">
+                            <span class="cat-tag" x-text="selectedApp.category"></span>
+                            <span>•</span>
+                            <span x-text="'Versi ' + selectedApp.version"></span>
+                            <span>•</span>
+                            <span x-text="selectedApp.size"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-body">
+                    <h4 class="section-title">Deskripsi Lengkap</h4>
+                    <p class="long-desc" x-text="selectedApp.longDesc"></p>
+
+                    <div class="spec-grid">
+                        <div>
+                            <p class="spec-label">Pembaruan Sistem</p>
+                            <p class="spec-val" x-text="selectedApp.updated"></p>
+                        </div>
+                        <div>
+                            <p class="spec-label">Developer Resmi</p>
+                            <p class="spec-val" style="color: var(--accent);" x-text="selectedApp.dev"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkout-box">
+                    <div class="checkout-header">
+                        <span class="checkout-label">Harga:</span>
+                        <span class="checkout-price" x-text="selectedApp.price === 0 ? 'GRATIS' : formatCurrency(selectedApp.price)"></span>
+                    </div>
+                    
+                    <a :href="'https://wa.me/6282289015759?text=Halo, saya ingin membeli aplikasi ' + encodeURIComponent(selectedApp.name) + ' versi ' + selectedApp.version" 
+                       target="_blank" class="btn-order">
+                        <span>🛒 Checkout</span>
+                    </a>
+                    <p class="checkout-note">Link Instalasi akan dikirim langsung via chat pasca proses pembayaran dikonfirmasi.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <h3>O'Cre Apk Store</h3>
+            <p>Penyedia & Developer Aplikasi Android</p>
+        </div>
+        
+        <div>
+            <h4 class="footer-title-sub">Hubungi Kami</h4>
+            <div class="footer-contact-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                <a href="https://wa.me/6282289015759" target="_blank" style="color: #94a3b8; text-decoration: none;">
+                    <span>+62 822-8901-5759 (WhatsApp)</span>
+                </a>
+            </div>
+            <div class="footer-contact-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                <a href="mailto:32hendiirawan@gmail.com" target="_blank" style="color: #94a3b8; text-decoration: none;">
+                    <span>32hendiirawan@gmail.com</span>
+                </a>
+            </div>
+        </div>
+
+        <div>
+            <h4 class="footer-title-sub">Ikuti Media Sosial</h4>
+            <ul class="footer-links">
+                <li><a href="https://www.tiktok.com/@newbie.4869?is_from_webapp=1&sender_device=pc" target="_blank">TikTok</a></li>
+                <li><a href="https://o-cre.blogspot.com/" target="_blank">Blogger</a></li>
+                <li><a href="#" target="_blank">Telegram Hub Community</a></li>
+            </ul>
+        </div>
+
+        <div>
+            <h4 class="footer-title-sub">Alamat</h4>
+            <div class="footer-contact-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <a href="https://maps.app.goo.gl/ghZjDLBjc6z4bVsd9" target="_blank" style="color: #94a3b8; text-decoration: none;">
+                    <span>Pekalongan, Lampung Timur<br>Lampung, Indonesia</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <p>@ 2026 O'Cre Apk Store. Owned by Hendi Irawan</p>
+    </div>
+</footer>
+
+<script src="js/script.js"></script>
+
+</body>
+</html>
