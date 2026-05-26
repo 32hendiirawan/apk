@@ -71,7 +71,7 @@ body {
     text-align: center;
     letter-spacing: -0.05em;
     margin-bottom: 0.5rem;
-    background: linear-gradient(to right, var(--text-main), var(--accent));
+    background: linear-gradient(to right, lightblue, lightcyan);
     -webkit-background-clip: text;
     background-clip: text; /* PERBAIKAN: Menambahkan standard property */
     -webkit-text-fill-color: transparent;
