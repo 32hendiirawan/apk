@@ -74,7 +74,7 @@ body {
     background: linear-gradient(to right, lightblue, lightcyan);
     -webkit-background-clip: text;
     background-clip: text; /* PERBAIKAN: Menambahkan standard property */
-    -webkit-text-fill-color: transparent;
+    color: navy;
 }
 .shop-tagline {
     color: var(--text-muted);
@@ -87,6 +87,7 @@ body {
     gap: 1.5rem;
 }
 .feature-card {
+    background: lightblue;
     border: 1px solid var(--border-color);
     padding: 1.5rem;
     border-radius: var(--radius-lg);
@@ -96,6 +97,7 @@ body {
     transition: var(--transition);
 }
 .feature-card:hover {
+    background: blue;
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
     border-color: var(--accent);
@@ -110,8 +112,8 @@ body {
     justify-content: center;
 }
 .feature-icon svg { width: 1.5rem; height: 1.5rem; stroke-width: 2.5; }
-.feature-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.25rem; }
-.feature-desc { color: var(--text-muted); font-size: 0.85rem; }
+.feature-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.25rem; color:white; }
+.feature-desc { color: var(--text-muted); font-size: 0.85rem; color: white;}
 
 /* ==================== SEARCH & FILTERS CONTROLS ==================== */
 .controls-bar {
@@ -166,7 +168,7 @@ body {
 .app-card {
     background: var(--bg-card);
     border: 1px solid rgba(241, 245, 249, 0.8);
-    border-radius: var(--radius-lg);
+    border-radius: 20px;
     padding: 1rem;
     box-shadow: var(--shadow-sm);
     cursor: pointer;
@@ -179,6 +181,7 @@ body {
     transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
     border-color: rgba(37, 99, 235, 0.1);
+    background: skyblue;
 }
 .app-card-thumb {
     aspect-ratio: 1;
