@@ -87,7 +87,6 @@ body {
     gap: 1.5rem;
 }
 .feature-card {
-    background: var(--bg-card);
     border: 1px solid var(--border-color);
     padding: 1.5rem;
     border-radius: var(--radius-lg);
